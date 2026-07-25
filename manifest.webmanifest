@@ -1,7 +1,7 @@
 {
-  "name": "Animal Move Planner 多动物搬家管家",
+  "name": "Animal Move Planner v3.2",
   "short_name": "Move Planner",
-  "start_url": "./index.html",
+  "start_url": "./?v=3.2",
   "display": "standalone",
   "background_color": "#fff8f5",
   "theme_color": "#fff8f5",
@@ -12,5 +12,6 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "scope": "./"
 }

@@ -2,6 +2,9 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f5f6fa">
 <link rel="manifest" href="manifest.webmanifest">
@@ -464,7 +467,7 @@ dialog::backdrop{background:rgba(89,53,41,.28);backdrop-filter:blur(3px)}
 <body>
 <div class="app">
 <section class="hero"><div class="hero-mascot">🐰📦</div>
- <div class="hero-top"><div><h1>🌷 Move Planner <small style="font-size:12px;color:#747b8a">v1.5</small></h1><div class="sub">东京 → 埼玉｜搬家日 2026年8月28日｜数据仅保存在本机</div></div><div class="countdown"><b id="daysLeft">-</b><span>距离搬家</span></div></div>
+ <div id="versionBadge" style="position:absolute;left:18px;bottom:12px;font-size:10px;color:var(--muted);z-index:2">v3.2 动物版</div><div class="hero-top"><div><h1>🌷 Move Planner <small style="font-size:12px;color:#747b8a">v1.5</small></h1><div class="sub">东京 → 埼玉｜搬家日 2026年8月28日｜数据仅保存在本机</div></div><div class="countdown"><b id="daysLeft">-</b><span>距离搬家</span></div></div>
  <div class="progress"><div id="bar"></div></div>
  <div class="stats"><div class="stat"><b id="todayCount">0</b><span>今天</span></div><div class="stat"><b id="weekCount">0</b><span>7天内</span></div><div class="stat"><b id="overdueCount">0</b><span>逾期</span></div><div class="stat"><b id="doneCount">0</b><span>已完成</span></div></div>
 <div class="animal-strip"><div class="animal rabbit">🐰</div><div class="animal bear">🐻</div><div class="animal cat">🐱</div><div class="animal dog">🐶</div><div class="animal hamster">🐹</div></div><div class="notice">不用一次做完，每完成一件就已经很棒啦。勾选、备注和预算都会自动保存在当前手机浏览器。</div>
@@ -647,7 +650,20 @@ document.getElementById("quickOverdue").onclick=()=>{document.querySelector('[da
 document.getElementById("quickWeek").onclick=()=>{document.querySelector('[data-tab="tasks"]').click();document.getElementById("filter").value="week";renderTasks();document.getElementById("taskList").scrollIntoView({behavior:"smooth"})};
 document.getElementById("quickImportant").onclick=()=>{document.querySelector('[data-tab="tasks"]').click();document.getElementById("filter").value="important";renderTasks();document.getElementById("taskList").scrollIntoView({behavior:"smooth"})};
 
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+if("serviceWorker" in navigator){
+window.addEventListener("load",async()=>{
+ try{
+  const reg=await navigator.serviceWorker.register("./sw.js?v=3.2",{updateViaCache:"none"});
+  await reg.update();
+  let refreshing=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+   if(refreshing)return;
+   refreshing=true;
+   location.reload();
+  });
+ }catch(e){console.warn("SW update failed",e)}
+});
+};
 render();
 </script>
 </body>
