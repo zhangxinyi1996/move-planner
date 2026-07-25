@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f5f6fa">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>Move Planner v1.5</title>
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--text:#20232b;--muted:#747b8a;--line:#e6e8ef;--accent:#5167dc;--red:#d95768;--amber:#d98d36;--green:#2c9b68}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC",sans-serif}
+button,input,select,textarea{font:inherit} .app{max-width:760px;margin:auto;padding:14px 12px 100px}
+.hero{background:linear-gradient(135deg,#fff,#eef1ff);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 10px 30px #29324a12}
+.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:start}h1{font-size:25px;margin:0}.countdown{text-align:right}.countdown b{display:block;font-size:27px}.countdown span,.sub{font-size:12px;color:var(--muted)}
+.progress{height:10px;background:#e4e7f1;border-radius:99px;overflow:hidden;margin-top:16px}#bar{height:100%;width:0;background:var(--accent);transition:.25s}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}.stat{background:#ffffffb8;border:1px solid var(--line);border-radius:13px;padding:9px;text-align:center}.stat b{display:block;font-size:19px}.stat span{font-size:10px;color:var(--muted)}
+.tabs{position:sticky;top:0;z-index:8;background:#f5f6faf2;padding:10px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.tab{border:1px solid var(--line);background:#fff;border-radius:12px;min-height:42px}.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.panel{display:none}.panel.active{display:block}.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:7px;margin:5px 0 12px}.toolbar input,.toolbar select,.toolbar button{border:1px solid var(--line);background:#fff;border-radius:12px;min-height:43px;padding:0 10px}
+.section{margin:15px 0}.section h2{font-size:17px;margin:0 3px 8px;display:flex;justify-content:space-between}.section h2 span{font-size:12px;color:var(--muted);font-weight:400}
+.task{display:grid;grid-template-columns:29px 1fr auto;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;margin-bottom:8px}.task.overdue{border-color:#efb4bc;background:#fffafb}.task.soon{border-color:#edcf9f;background:#fffdf7}.task.done .title{text-decoration:line-through;color:#969daa}
+.check{appearance:none;width:27px;height:27px;border:2px solid #b8becc;border-radius:9px;margin:1px 0 0}.check:checked{background:var(--accent);border-color:var(--accent)}.check:checked:after{content:"✓";display:block;color:white;font-weight:800;font-size:18px;text-align:center;line-height:23px}
+.title{font-weight:700;font-size:15px}.note{font-size:12px;color:var(--muted);margin:5px 0}.meta{display:flex;gap:6px;flex-wrap:wrap}.chip{font-size:11px;padding:4px 7px;background:#eef1ff;color:#4d5dc0;border-radius:99px}.chip.red{background:#ffe9ed;color:var(--red)}.chip.amber{background:#fff1dc;color:var(--amber)}.chip.green{background:#e7f7ef;color:var(--green)}.edit{border:0;background:transparent;font-size:19px;color:#8a91a1}
+.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:14px;margin-bottom:10px}.card h3{margin:0 0 10px;font-size:17px}
+.budget-row{display:grid;grid-template-columns:1fr 100px 100px auto;gap:7px;margin-bottom:7px}.budget-row input{min-width:0;border:1px solid var(--line);border-radius:10px;padding:8px}.budget-total{font-size:22px;font-weight:800}
+.empty{padding:25px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:15px}
+dialog{width:min(calc(100% - 24px),560px);border:0;border-radius:22px;padding:0;box-shadow:0 20px 80px #15192755}dialog::backdrop{background:#1c213055}.dialog{padding:18px}.dialog h3{margin:0 0 13px}.field{margin-bottom:10px}.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px;min-height:42px}.field textarea{min-height:75px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.actions button{min-height:44px;border:1px solid var(--line);border-radius:12px;background:#fff}.actions .save{background:var(--accent);color:#fff;border-color:var(--accent)}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:56px;height:56px;border:0;border-radius:50%;background:var(--accent);color:#fff;font-size:28px;box-shadow:0 10px 24px #4453a955}
+@media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}.budget-row{grid-template-columns:1fr 80px 80px auto}}
+
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{padding-bottom:env(safe-area-inset-bottom)}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.task,.card,.hero{backdrop-filter:saturate(140%) blur(12px)}
+.task{transition:transform .16s ease,opacity .16s ease,box-shadow .16s ease}
+.task:active{transform:scale(.992)}
+.check{transition:transform .15s ease,background .15s ease}
+.check:checked{transform:scale(1.05)}
+.fab{transition:transform .15s ease}
+.fab:active{transform:scale(.94)}
+.tab{font-weight:700}
+.notice{margin-top:12px;padding:10px 12px;border-radius:12px;background:#eef1ff;color:#4d5dc0;font-size:12px}
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}
+.quick button{border:1px solid var(--line);background:#fff;border-radius:12px;min-height:40px}
+.starred{box-shadow:0 8px 24px #5167dc18;border-color:#cfd5ff}
+@media (prefers-color-scheme:dark){
+:root{--bg:#111318;--card:#1a1d24;--text:#f2f3f7;--muted:#9ba2b2;--line:#2a2f39;--accent:#7b8cff;--red:#ff8797;--amber:#ffb45e;--green:#57c890}
+body{background:var(--bg)}
+.hero{background:linear-gradient(135deg,#1c2028,#20263a)}
+.stat,.toolbar input,.toolbar select,.toolbar button,.tab,.task,.card{background:#1a1d24}
+.tab.active{background:var(--accent)}
+.task.overdue{background:#261b20}.task.soon{background:#282217}
+.notice{background:#222944;color:#b8c0ff}
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+<section class="hero">
+ <div class="hero-top"><div><h1>🏠 Move Planner <small style="font-size:12px;color:#747b8a">v1.5</small></h1><div class="sub">东京 → 埼玉｜搬家日 2026年8月28日｜数据仅保存在本机</div></div><div class="countdown"><b id="daysLeft">-</b><span>距离搬家</span></div></div>
+ <div class="progress"><div id="bar"></div></div>
+ <div class="stats"><div class="stat"><b id="todayCount">0</b><span>今天</span></div><div class="stat"><b id="weekCount">0</b><span>7天内</span></div><div class="stat"><b id="overdueCount">0</b><span>逾期</span></div><div class="stat"><b id="doneCount">0</b><span>已完成</span></div></div>
+<div class="notice">建议先完成红色逾期事项，再处理7天内到期事项。勾选、备注和预算会自动保存在当前手机浏览器。</div>
+<div class="quick">
+<button id="quickOverdue">查看逾期</button>
+<button id="quickWeek">查看7天内</button>
+<button id="quickImportant">查看重要</button>
+</div>
+</section>
+
+<nav class="tabs">
+ <button class="tab active" data-tab="tasks">待办</button>
+ <button class="tab" data-tab="timeline">时间轴</button>
+ <button class="tab" data-tab="budget">预算</button>
+ <button class="tab" data-tab="data">数据</button>
+</nav>
+
+<section id="tasks" class="panel active">
+ <div class="toolbar">
+  <input id="search" placeholder="搜索，例如 Amazon、银行、在留卡">
+  <select id="filter"><option value="all">全部</option><option value="open">未完成</option><option value="today">今天</option><option value="week">7天内</option><option value="overdue">逾期</option><option value="important">重要事项</option><option value="done">已完成</option></select>
+  <select id="groupBy"><option value="phase">按阶段</option><option value="category">按分类</option></select>
+ </div>
+ <div id="taskList"></div>
+</section>
+
+<section id="timeline" class="panel"><div id="timelineList"></div></section>
+
+<section id="budget" class="panel">
+ <div class="card"><h3>搬家预算</h3><div id="budgetRows"></div><button id="addBudget">＋ 添加费用</button></div>
+ <div class="card"><div class="sub">预算合计</div><div class="budget-total" id="budgetPlan">¥0</div><div class="sub" style="margin-top:12px">实际支出</div><div class="budget-total" id="budgetActual">¥0</div></div>
+</section>
+
+<section id="data" class="panel">
+ <div class="card"><h3>数据管理</h3><p class="sub">所有勾选、编辑和预算都保存在当前浏览器。</p><button id="exportBtn">导出备份</button> <button id="importBtn">导入备份</button><input id="importFile" type="file" accept=".json" hidden></div>
+ <div class="card"><h3>安装到主屏幕</h3><p class="sub">通过 Safari 打开网页后，点“共享”→“添加到主屏幕”。本地 HTML 可能无法完整启用离线安装；部署到任意静态网站后可作为 PWA 使用。</p></div>
+</section>
+</div>
+
+<button class="fab" id="addTask">＋</button>
+
+<dialog id="taskDialog"><form method="dialog" class="dialog" id="taskForm">
+<h3 id="dialogTitle">新增待办</h3>
+<input type="hidden" id="editId">
+<div class="field"><label>事项</label><input id="fTitle" required></div>
+<div class="field"><label>分类</label><input id="fCategory" list="categoryList"><datalist id="categoryList"></datalist></div>
+<div class="field"><label>阶段</label><select id="fPhase"></select></div>
+<div class="field"><label>期限</label><input id="fDue" type="date"></div>
+<div class="field"><label>重要程度</label><select id="fPriority"><option value="1">普通</option><option value="2">重要</option><option value="3">非常重要</option></select></div>
+<div class="field"><label>预计时间（分钟）</label><input id="fMinutes" type="number" min="0"></div>
+<div class="field"><label>地点</label><input id="fLocation"></div>
+<div class="field"><label>备注</label><textarea id="fNote"></textarea></div>
+<div class="actions"><button value="cancel">取消</button><button class="save" id="saveTask" value="default">保存</button></div>
+</form></dialog>
+
+<script>
+const DEFAULT_TASKS=[{"id": "t1", "title": "联系搬家公司并比较报价", "category": "搬家准备", "phase": "搬家前3～4周", "due": "2026-08-03", "priority": 3, "note": "确认日期、时间段、纸箱、拆装和追加费用。", "location": "", "minutes": 30, "done": false}, {"id": "t2", "title": "申请处理粗大垃圾", "category": "搬家准备", "phase": "搬家前3～4周", "due": "2026-08-05", "priority": 2, "note": "大型家具家电尽早预约处理。", "location": "", "minutes": 20, "done": false}, {"id": "t3", "title": "确认新房网络线路并预约开通", "category": "新房准备", "phase": "搬家前3～4周", "due": "2026-08-05", "priority": 3, "note": "确认NTT光线路、施工许可、开通日和路由器。", "location": "", "minutes": 30, "done": false}, {"id": "t4", "title": "购买或预约配送冰箱、洗衣机", "category": "家具家电", "phase": "搬家前3～4周", "due": "2026-08-08", "priority": 3, "note": "指定8月28日或之后配送，确认安装和旧机回收。", "location": "", "minutes": 60, "done": false}, {"id": "t5", "title": "购买窗帘和照明", "category": "家具家电", "phase": "搬家前3～4周", "due": "2026-08-15", "priority": 2, "note": "确认窗户尺寸及房间是否自带灯具。", "location": "", "minutes": 40, "done": false}, {"id": "t6", "title": "确认新房火灾保险", "category": "新房准备", "phase": "搬家前3～4周", "due": "2026-08-08", "priority": 2, "note": "确认是否已包含在租房合同中。", "location": "", "minutes": 15, "done": false}, {"id": "t7", "title": "办理邮局邮件转送", "category": "地址更新", "phase": "搬家前1～2周", "due": "2026-08-14", "priority": 3, "note": "可线上申请，通常转送一年。", "location": "日本邮便", "minutes": 15, "done": false}, {"id": "t8", "title": "开通新房电力", "category": "水电煤网络", "phase": "搬家前1～2周", "due": "2026-08-14", "priority": 3, "note": "开始使用日设为2026年8月28日。", "location": "", "minutes": 15, "done": false}, {"id": "t9", "title": "开通新房自来水", "category": "水电煤网络", "phase": "搬家前1～2周", "due": "2026-08-14", "priority": 3, "note": "开始使用日设为2026年8月28日。", "location": "", "minutes": 15, "done": false}, {"id": "t10", "title": "预约新房煤气开栓", "category": "水电煤网络", "phase": "搬家前1～2周", "due": "2026-08-14", "priority": 3, "note": "通常需要本人在场，预约8月28日合适时间。", "location": "新房", "minutes": 30, "done": false}, {"id": "t11", "title": "处理旧房水电煤合同或室友名义变更", "category": "旧房交接", "phase": "搬家前1～2周", "due": "2026-08-16", "priority": 3, "note": "确认哪些解约，哪些转给室友。", "location": "", "minutes": 30, "done": false}, {"id": "t12", "title": "联系现在公司更新地址", "category": "工作与签证", "phase": "搬家前1～2周", "due": "2026-08-20", "priority": 3, "note": "确认通勤费、工资及税务资料。", "location": "", "minutes": 15, "done": false}, {"id": "t13", "title": "联系DXC更新地址", "category": "工作与签证", "phase": "搬家前1～2周", "due": "2026-08-20", "priority": 3, "note": "入职资料、在留卡资料保持一致。", "location": "", "minutes": 15, "done": false}, {"id": "t14", "title": "联系姐姐告知新地址", "category": "个人联络", "phase": "搬家前1～2周", "due": "2026-08-20", "priority": 1, "note": "避免重要文件或包裹寄错。", "location": "", "minutes": 5, "done": false}, {"id": "t15", "title": "到现住所区役所办理转出届", "category": "行政手续", "phase": "搬家前1周", "due": "2026-08-21", "priority": 3, "note": "跨市区町村搬家时办理。", "location": "现住所区役所", "minutes": 40, "done": false}, {"id": "t16", "title": "检查Amazon定期购和近期订单地址", "category": "地址更新", "phase": "搬家前1周", "due": "2026-08-22", "priority": 3, "note": "特别确认搬家前后配送的订单。", "location": "", "minutes": 15, "done": false}, {"id": "t17", "title": "更新各购物网站默认地址", "category": "地址更新", "phase": "搬家前1周", "due": "2026-08-23", "priority": 2, "note": "楽天、Mercari、Yahoo购物等。", "location": "", "minutes": 30, "done": false}, {"id": "t18", "title": "整理银行、信用卡、证券账户清单", "category": "银行与保险", "phase": "搬家前1周", "due": "2026-08-23", "priority": 2, "note": "搬家后统一更新地址，避免遗漏。", "location": "", "minutes": 20, "done": false}, {"id": "t19", "title": "确认旧房退房清扫范围", "category": "旧房交接", "phase": "搬家前1周", "due": "2026-08-23", "priority": 2, "note": "确认是否需要专业清扫或局部修复。", "location": "旧房", "minutes": 20, "done": false}, {"id": "t20", "title": "确认搬家当天钥匙和交接安排", "category": "旧房交接", "phase": "搬家前1周", "due": "2026-08-24", "priority": 3, "note": "包括室友、房东或管理公司的时间。", "location": "", "minutes": 15, "done": false}, {"id": "t21", "title": "备份重要文件并单独保管贵重物品", "category": "搬家准备", "phase": "搬家前1周", "due": "2026-08-25", "priority": 3, "note": "护照、在留卡、My Number、合同、印章。", "location": "", "minutes": 30, "done": false}, {"id": "t22", "title": "确认新居垃圾分类和收集日", "category": "新房准备", "phase": "搬家前1周", "due": "2026-08-25", "priority": 2, "note": "提前准备指定垃圾袋。", "location": "", "minutes": 15, "done": false}, {"id": "t23", "title": "冰箱清空、除霜并断电", "category": "搬家准备", "phase": "搬家前一天", "due": "2026-08-27", "priority": 3, "note": "按说明书提前断电，避免漏水。", "location": "旧房", "minutes": 20, "done": false}, {"id": "t24", "title": "准备搬家当天随身包", "category": "搬家准备", "phase": "搬家前一天", "due": "2026-08-27", "priority": 3, "note": "证件、充电器、药品、纸巾、饮用水、换洗衣物。", "location": "", "minutes": 20, "done": false}, {"id": "t25", "title": "拍摄旧房现状和家具设备照片", "category": "旧房交接", "phase": "搬家前一天", "due": "2026-08-27", "priority": 3, "note": "保留押金结算和交接证据。", "location": "旧房", "minutes": 20, "done": false}, {"id": "t26", "title": "彻底打扫旧房", "category": "旧房交接", "phase": "搬家前一天", "due": "2026-08-27", "priority": 3, "note": "厨房、浴室、厕所、阳台、排水口和冰箱位置。", "location": "旧房", "minutes": 120, "done": false}, {"id": "t27", "title": "与搬家公司确认物品数量和损伤", "category": "搬家当天", "phase": "搬家当天", "due": "2026-08-28", "priority": 3, "note": "装车前后都检查。", "location": "旧房/新房", "minutes": 20, "done": false}, {"id": "t28", "title": "检查新房墙面、地板和设备并拍照", "category": "新房准备", "phase": "搬家当天", "due": "2026-08-28", "priority": 3, "note": "发现问题尽快通知管理公司。", "location": "新房", "minutes": 30, "done": false}, {"id": "t29", "title": "清扫新房后再摆放家具", "category": "新房准备", "phase": "搬家当天", "due": "2026-08-28", "priority": 2, "note": "重点清理地板、柜子、厨房和洗衣机排水口。", "location": "新房", "minutes": 60, "done": false}, {"id": "t30", "title": "记录新房水电煤表读数", "category": "水电煤网络", "phase": "搬家当天", "due": "2026-08-28", "priority": 2, "note": "拍照保存，避免费用争议。", "location": "新房", "minutes": 10, "done": false}, {"id": "t31", "title": "确认水、电、煤气、热水和空调可用", "category": "水电煤网络", "phase": "搬家当天", "due": "2026-08-28", "priority": 3, "note": "煤气开栓时需要在场。", "location": "新房", "minutes": 30, "done": false}, {"id": "t32", "title": "确认冰箱和洗衣机安装状态", "category": "家具家电", "phase": "搬家当天", "due": "2026-08-28", "priority": 3, "note": "检查漏水、插座及水平。", "location": "新房", "minutes": 20, "done": false}, {"id": "t33", "title": "与室友交接钥匙、说明书和公共设备", "category": "旧房交接", "phase": "搬家当天", "due": "2026-08-28", "priority": 3, "note": "包括网络、家电、水电煤及垃圾规则。", "location": "旧房", "minutes": 30, "done": false}, {"id": "t34", "title": "旧房房东或管理公司检查", "category": "旧房交接", "phase": "搬家当天", "due": "2026-08-28", "priority": 3, "note": "确认押金、修缮费和钥匙归还方式。", "location": "旧房", "minutes": 40, "done": false}, {"id": "t35", "title": "到新住所市役所办理迁入届", "category": "行政手续", "phase": "搬家后14天内", "due": "2026-09-11", "priority": 3, "note": "迁入后14天内办理。", "location": "新住所市役所", "minutes": 60, "done": false}, {"id": "t36", "title": "更新住民票地址", "category": "行政手续", "phase": "搬家后14天内", "due": "2026-09-11", "priority": 3, "note": "办理迁入届时一并确认。", "location": "新住所市役所", "minutes": 10, "done": false}, {"id": "t37", "title": "更新在留卡地址", "category": "工作与签证", "phase": "搬家后14天内", "due": "2026-09-11", "priority": 3, "note": "通常可在迁入手续时一并办理。", "location": "新住所市役所", "minutes": 20, "done": false}, {"id": "t38", "title": "更新My Number卡地址", "category": "行政手续", "phase": "搬家后14天内", "due": "2026-09-11", "priority": 3, "note": "带上My Number卡及所需密码。", "location": "新住所市役所", "minutes": 20, "done": false}, {"id": "t39", "title": "向入管报告永住申请中的地址变更", "category": "工作与签证", "phase": "搬家后14天内", "due": "2026-09-04", "priority": 3, "note": "保留提交或联系记录。", "location": "", "minutes": 30, "done": false}, {"id": "t40", "title": "更新银行卡登记地址", "category": "银行与保险", "phase": "搬家后14天内", "due": "2026-09-06", "priority": 3, "note": "包括主要银行账户。", "location": "", "minutes": 30, "done": false}, {"id": "t41", "title": "更新信用卡账单地址", "category": "银行与保险", "phase": "搬家后14天内", "due": "2026-09-06", "priority": 3, "note": "确认实体卡、账单和本人确认资料。", "location": "", "minutes": 30, "done": false}, {"id": "t42", "title": "更新证券账户和NISA地址", "category": "银行与保险", "phase": "搬家后14天内", "due": "2026-09-06", "priority": 3, "note": "确认是否需要重新提交本人确认资料。", "location": "", "minutes": 30, "done": false}, {"id": "t43", "title": "更新手机运营商地址", "category": "地址更新", "phase": "搬家后14天内", "due": "2026-09-06", "priority": 2, "note": "确认账单和契约地址。", "location": "", "minutes": 15, "done": false}, {"id": "t44", "title": "更新保险地址", "category": "银行与保险", "phase": "搬家后14天内", "due": "2026-09-06", "priority": 2, "note": "医疗险、生命险、火灾险等。", "location": "", "minutes": 20, "done": false}, {"id": "t45", "title": "更新Amazon定期购地址", "category": "地址更新", "phase": "搬家后14天内", "due": "2026-09-01", "priority": 3, "note": "逐项确认每个定期商品的配送地址。", "location": "", "minutes": 15, "done": false}, {"id": "t46", "title": "更新网购和配送服务地址", "category": "地址更新", "phase": "搬家后14天内", "due": "2026-09-01", "priority": 2, "note": "Amazon、楽天、Mercari、Yamato等。", "location": "", "minutes": 30, "done": false}, {"id": "t47", "title": "更新医院、牙科和药局登记地址", "category": "地址更新", "phase": "搬家后14天内", "due": "2026-09-11", "priority": 1, "note": "下次就诊时也可一并修改。", "location": "", "minutes": 15, "done": false}, {"id": "t48", "title": "确认旧房最终水电煤费用", "category": "旧房交接", "phase": "搬家后", "due": "2026-09-15", "priority": 2, "note": "避免重复扣款或欠费。", "location": "", "minutes": 20, "done": false}, {"id": "t49", "title": "检查所有自动扣款是否正常", "category": "银行与保险", "phase": "搬家后", "due": "2026-09-15", "priority": 2, "note": "水电煤、网络、手机、保险和定期购。", "location": "", "minutes": 20, "done": false}, {"id": "t50", "title": "确认旧房押金退款账户和修缮费明细", "category": "旧房交接", "phase": "搬家后", "due": "2026-09-30", "priority": 3, "note": "保存结算书和转账记录。", "location": "", "minutes": 20, "done": false}, {"id": "t51", "title": "确认所有重要邮件已正常转送", "category": "地址更新", "phase": "搬家后", "due": "2026-09-30", "priority": 2, "note": "发现漏寄时及时联系寄件方。", "location": "", "minutes": 15, "done": false}, {"id": "t52", "title": "整理并保存新房合同、说明书和保修书", "category": "新房准备", "phase": "搬家后", "due": "2026-09-05", "priority": 2, "note": "统一放在固定位置。", "location": "新房", "minutes": 30, "done": false}, {"id": "t53", "title": "确认防灾用品和最近避难所", "category": "新房准备", "phase": "搬家后", "due": "2026-09-10", "priority": 1, "note": "准备饮用水、手电筒、充电宝和应急用品。", "location": "", "minutes": 20, "done": false}];
+const PHASES=["搬家前3～4周","搬家前1～2周","搬家前1周","搬家前一天","搬家当天","搬家后14天内","搬家后"];
+const MOVE_DATE="2026-08-28";
+const STORE="move-planner-v1";
+let state=load();
+function load(){try{const x=JSON.parse(localStorage.getItem(STORE));if(x&&x.tasks)return x}catch(e){}return {tasks:structuredClone(DEFAULT_TASKS),budget:[{name:"搬家初期费用",plan:380000,actual:0},{name:"搬家公司",plan:40000,actual:0},{name:"冰箱",plan:80000,actual:0},{name:"洗衣机",plan:70000,actual:0}]}}
+function persist(){localStorage.setItem(STORE,JSON.stringify(state))}
+function todayStr(){const d=new Date();return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")}
+function diff(s){if(!s)return 9999;return Math.round((new Date(s+"T00:00:00")-new Date(todayStr()+"T00:00:00"))/86400000)}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function status(t){if(t.done)return ["green","已完成"];const d=diff(t.due);if(d<0)return ["red","逾期 "+Math.abs(d)+" 天"];if(d===0)return ["amber","今天到期"];if(d<=7)return ["amber",d+" 天后到期"];return ["","期限 "+(t.due||"未设")]}
+
+function render(){
+ const total=state.tasks.length,done=state.tasks.filter(t=>t.done).length;
+ document.getElementById("doneCount").textContent=done;
+ document.getElementById("todayCount").textContent=state.tasks.filter(t=>!t.done&&diff(t.due)===0).length;
+ document.getElementById("weekCount").textContent=state.tasks.filter(t=>!t.done&&diff(t.due)>=0&&diff(t.due)<=7).length;
+ document.getElementById("overdueCount").textContent=state.tasks.filter(t=>!t.done&&diff(t.due)<0).length;
+ document.getElementById("bar").style.width=(total?Math.round(done/total*100):0)+"%";
+ document.getElementById("daysLeft").textContent=Math.max(0,diff(MOVE_DATE))+" 天";
+ renderTasks();renderTimeline();renderBudget();
+}
+function filtered(){
+ const q=document.getElementById("search").value.trim().toLowerCase(),f=document.getElementById("filter").value;
+ return state.tasks.filter(t=>{
+  const hay=[t.title,t.note,t.category,t.phase,t.location].join(" ").toLowerCase();
+  if(q&&!hay.includes(q))return false;
+  if(f==="open"&&t.done)return false;if(f==="done"&&!t.done)return false;
+  if(f==="today"&&(t.done||diff(t.due)!==0))return false;
+  if(f==="week"&&(t.done||diff(t.due)<0||diff(t.due)>7))return false;
+  if(f==="overdue"&&(t.done||diff(t.due)>=0))return false;if(f==="important"&&(t.done||(t.priority||1)<3))return false;
+  return true;
+ });
+}
+function renderTasks(){
+ const list=document.getElementById("taskList"),group=document.getElementById("groupBy").value,arr=filtered();
+ const groups={};arr.forEach(t=>{const k=t[group]||"其他";(groups[k]??=[]).push(t)});
+ const keys=Object.keys(groups).sort((a,b)=>group==="phase"?PHASES.indexOf(a)-PHASES.indexOf(b):a.localeCompare(b));
+ if(!keys.length){list.innerHTML='<div class="empty">没有符合条件的待办</div>';return}
+ list.innerHTML=keys.map(k=>`<div class="section"><h2>${esc(k)}<span>${groups[k].filter(x=>x.done).length}/${groups[k].length} 完成</span></h2>${groups[k].sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999")).map(taskHTML).join("")}</div>`).join("");
+ bindTaskEvents(list);
+}
+function taskHTML(t){const [c,tx]=status(t);return `<article class="task ${t.done?"done":""} ${c==="red"?"overdue":c==="amber"?"soon":""}" data-id="${t.id}"><input class="check" type="checkbox" ${t.done?"checked":""}><div><div class="title">${esc(t.title)} ${"★".repeat(t.priority||1)}</div><div class="note">${esc(t.note)}</div><div class="meta"><span class="chip ${c}">${tx}</span><span class="chip">${esc(t.category)}</span>${t.location?`<span class="chip">${esc(t.location)}</span>`:""}${t.minutes?`<span class="chip">${t.minutes}分钟</span>`:""}</div></div><button class="edit">⋯</button></article>`}
+function bindTaskEvents(root){root.querySelectorAll(".task").forEach(el=>{const t=state.tasks.find(x=>x.id===el.dataset.id);el.querySelector(".check").onchange=e=>{t.done=e.target.checked;persist();render()};el.querySelector(".edit").onclick=()=>openEdit(t)})}
+function renderTimeline(){const arr=[...state.tasks].sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999"));document.getElementById("timelineList").innerHTML=arr.map(t=>`<div class="card"><b>${t.due||"无期限"}</b><div class="title" style="margin-top:5px">${t.done?"✓ ":""}${esc(t.title)}</div><div class="sub">${esc(t.phase)} · ${esc(t.category)}</div></div>`).join("")}
+function renderBudget(){const box=document.getElementById("budgetRows");box.innerHTML=state.budget.map((b,i)=>`<div class="budget-row"><input data-i="${i}" data-k="name" value="${esc(b.name)}"><input type="number" data-i="${i}" data-k="plan" value="${b.plan}"><input type="number" data-i="${i}" data-k="actual" value="${b.actual}"><button data-del="${i}">×</button></div>`).join("");box.querySelectorAll("input").forEach(x=>x.onchange=()=>{const b=state.budget[+x.dataset.i];b[x.dataset.k]=x.dataset.k==="name"?x.value:+x.value;persist();renderBudget()});box.querySelectorAll("[data-del]").forEach(x=>x.onclick=()=>{state.budget.splice(+x.dataset.del,1);persist();renderBudget()});const yen=n=>"¥"+Math.round(n).toLocaleString("ja-JP");document.getElementById("budgetPlan").textContent=yen(state.budget.reduce((s,b)=>s+(+b.plan||0),0));document.getElementById("budgetActual").textContent=yen(state.budget.reduce((s,b)=>s+(+b.actual||0),0))}
+
+const dlg=document.getElementById("taskDialog");
+function openEdit(t=null){document.getElementById("dialogTitle").textContent=t?"编辑待办":"新增待办";document.getElementById("editId").value=t?.id||"";document.getElementById("fTitle").value=t?.title||"";document.getElementById("fCategory").value=t?.category||"搬家准备";document.getElementById("fPhase").value=t?.phase||"搬家前1周";document.getElementById("fDue").value=t?.due||MOVE_DATE;document.getElementById("fPriority").value=t?.priority||2;document.getElementById("fMinutes").value=t?.minutes||"";document.getElementById("fLocation").value=t?.location||"";document.getElementById("fNote").value=t?.note||"";dlg.showModal()}
+document.getElementById("saveTask").onclick=e=>{const title=document.getElementById("fTitle").value.trim();if(!title){e.preventDefault();return}const id=document.getElementById("editId").value;let t=state.tasks.find(x=>x.id===id);if(!t){t={id:"u"+Date.now(),done:false};state.tasks.push(t)}Object.assign(t,{title,category:document.getElementById("fCategory").value||"其他",phase:document.getElementById("fPhase").value,due:document.getElementById("fDue").value,priority:+document.getElementById("fPriority").value,minutes:+document.getElementById("fMinutes").value||0,location:document.getElementById("fLocation").value,note:document.getElementById("fNote").value});persist();render()};
+document.getElementById("addTask").onclick=()=>openEdit();
+document.getElementById("addBudget").onclick=()=>{state.budget.push({name:"新费用",plan:0,actual:0});persist();renderBudget()};
+["search","filter","groupBy"].forEach(id=>document.getElementById(id).addEventListener(id==="search"?"input":"change",renderTasks));
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab,.panel").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.tab).classList.add("active")});
+document.getElementById("fPhase").innerHTML=PHASES.map(x=>`<option>${x}</option>`).join("");
+document.getElementById("categoryList").innerHTML=[...new Set(DEFAULT_TASKS.map(x=>x.category))].map(x=>`<option value="${esc(x)}">`).join("");
+document.getElementById("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="move-planner-backup.json";a.click();URL.revokeObjectURL(a.href)};
+document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
+document.getElementById("importFile").onchange=async e=>{try{const x=JSON.parse(await e.target.files[0].text());if(x.tasks){state=x;persist();render();alert("导入完成")}}catch(err){alert("导入失败")}};
+
+document.getElementById("quickOverdue").onclick=()=>{document.querySelector('[data-tab="tasks"]').click();document.getElementById("filter").value="overdue";renderTasks();document.getElementById("taskList").scrollIntoView({behavior:"smooth"})};
+document.getElementById("quickWeek").onclick=()=>{document.querySelector('[data-tab="tasks"]').click();document.getElementById("filter").value="week";renderTasks();document.getElementById("taskList").scrollIntoView({behavior:"smooth"})};
+document.getElementById("quickImportant").onclick=()=>{document.querySelector('[data-tab="tasks"]').click();document.getElementById("filter").value="important";renderTasks();document.getElementById("taskList").scrollIntoView({behavior:"smooth"})};
+
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+render();
+</script>
+</body>
+</html>
