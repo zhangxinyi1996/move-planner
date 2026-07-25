@@ -1,10 +1,10 @@
 {
-  "name": "Animal Move Planner v3.2",
+  "name": "Move Planner 2.0 SVG 动物版",
   "short_name": "Move Planner",
-  "start_url": "./?v=3.2",
+  "start_url": "./?v=2.0",
   "display": "standalone",
-  "background_color": "#fff8f5",
-  "theme_color": "#fff8f5",
+  "background_color": "#fff8f4",
+  "theme_color": "#fff8f4",
   "icons": [
     {
       "src": "icon.svg",
