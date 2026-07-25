@@ -7,73 +7,479 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
 <title>Move Planner v1.5</title>
-<style>
-:root{--bg:#f5f6fa;--card:#fff;--text:#20232b;--muted:#747b8a;--line:#e6e8ef;--accent:#5167dc;--red:#d95768;--amber:#d98d36;--green:#2c9b68}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC",sans-serif}
-button,input,select,textarea{font:inherit} .app{max-width:760px;margin:auto;padding:14px 12px 100px}
-.hero{background:linear-gradient(135deg,#fff,#eef1ff);border:1px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 10px 30px #29324a12}
-.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:start}h1{font-size:25px;margin:0}.countdown{text-align:right}.countdown b{display:block;font-size:27px}.countdown span,.sub{font-size:12px;color:var(--muted)}
-.progress{height:10px;background:#e4e7f1;border-radius:99px;overflow:hidden;margin-top:16px}#bar{height:100%;width:0;background:var(--accent);transition:.25s}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}.stat{background:#ffffffb8;border:1px solid var(--line);border-radius:13px;padding:9px;text-align:center}.stat b{display:block;font-size:19px}.stat span{font-size:10px;color:var(--muted)}
-.tabs{position:sticky;top:0;z-index:8;background:#f5f6faf2;padding:10px 0;display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.tab{border:1px solid var(--line);background:#fff;border-radius:12px;min-height:42px}.tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.panel{display:none}.panel.active{display:block}.toolbar{display:grid;grid-template-columns:1fr auto auto;gap:7px;margin:5px 0 12px}.toolbar input,.toolbar select,.toolbar button{border:1px solid var(--line);background:#fff;border-radius:12px;min-height:43px;padding:0 10px}
-.section{margin:15px 0}.section h2{font-size:17px;margin:0 3px 8px;display:flex;justify-content:space-between}.section h2 span{font-size:12px;color:var(--muted);font-weight:400}
-.task{display:grid;grid-template-columns:29px 1fr auto;gap:10px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;margin-bottom:8px}.task.overdue{border-color:#efb4bc;background:#fffafb}.task.soon{border-color:#edcf9f;background:#fffdf7}.task.done .title{text-decoration:line-through;color:#969daa}
-.check{appearance:none;width:27px;height:27px;border:2px solid #b8becc;border-radius:9px;margin:1px 0 0}.check:checked{background:var(--accent);border-color:var(--accent)}.check:checked:after{content:"✓";display:block;color:white;font-weight:800;font-size:18px;text-align:center;line-height:23px}
-.title{font-weight:700;font-size:15px}.note{font-size:12px;color:var(--muted);margin:5px 0}.meta{display:flex;gap:6px;flex-wrap:wrap}.chip{font-size:11px;padding:4px 7px;background:#eef1ff;color:#4d5dc0;border-radius:99px}.chip.red{background:#ffe9ed;color:var(--red)}.chip.amber{background:#fff1dc;color:var(--amber)}.chip.green{background:#e7f7ef;color:var(--green)}.edit{border:0;background:transparent;font-size:19px;color:#8a91a1}
-.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:14px;margin-bottom:10px}.card h3{margin:0 0 10px;font-size:17px}
-.budget-row{display:grid;grid-template-columns:1fr 100px 100px auto;gap:7px;margin-bottom:7px}.budget-row input{min-width:0;border:1px solid var(--line);border-radius:10px;padding:8px}.budget-total{font-size:22px;font-weight:800}
-.empty{padding:25px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:15px}
-dialog{width:min(calc(100% - 24px),560px);border:0;border-radius:22px;padding:0;box-shadow:0 20px 80px #15192755}dialog::backdrop{background:#1c213055}.dialog{padding:18px}.dialog h3{margin:0 0 13px}.field{margin-bottom:10px}.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px;min-height:42px}.field textarea{min-height:75px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.actions button{min-height:44px;border:1px solid var(--line);border-radius:12px;background:#fff}.actions .save{background:var(--accent);color:#fff;border-color:var(--accent)}
-.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));width:56px;height:56px;border:0;border-radius:50%;background:var(--accent);color:#fff;font-size:28px;box-shadow:0 10px 24px #4453a955}
-@media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}.toolbar{grid-template-columns:1fr 1fr}.toolbar input{grid-column:1/-1}.budget-row{grid-template-columns:1fr 80px 80px auto}}
 
+<style>
+:root{
+  --bg:#fff8f5;
+  --bg2:#fffdfb;
+  --card:#ffffff;
+  --text:#6c4638;
+  --muted:#a78378;
+  --line:#f3d8cf;
+  --pink:#ff8fa8;
+  --pink2:#ffdbe5;
+  --peach:#ffd9bd;
+  --yellow:#ffe9a8;
+  --mint:#dff4e8;
+  --blue:#dfeeff;
+  --lav:#eee3ff;
+  --red:#e66a79;
+  --amber:#d58b3f;
+  --green:#5fa87b;
+  --shadow:0 12px 35px rgba(153,91,73,.10);
+}
+*{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-body{padding-bottom:env(safe-area-inset-bottom)}
-button{cursor:pointer;-webkit-tap-highlight-color:transparent}
-.task,.card,.hero{backdrop-filter:saturate(140%) blur(12px)}
-.task{transition:transform .16s ease,opacity .16s ease,box-shadow .16s ease}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 10% 0%, #fff0f4 0 14%, transparent 35%),
+    radial-gradient(circle at 100% 20%, #fff5df 0 16%, transparent 38%),
+    linear-gradient(180deg,var(--bg2),var(--bg));
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC",sans-serif;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+button,input,select,textarea{font:inherit}
+button{-webkit-tap-highlight-color:transparent;cursor:pointer}
+.app{max-width:760px;margin:auto;padding:14px 12px 110px}
+.hero,.card,.task{
+  background:rgba(255,255,255,.93);
+  border:1.5px solid var(--line);
+  box-shadow:var(--shadow);
+}
+.hero{
+  position:relative;
+  overflow:hidden;
+  border-radius:28px;
+  padding:20px;
+}
+.hero:before{
+  content:"";
+  position:absolute;
+  width:180px;height:180px;border-radius:50%;
+  right:-70px;top:-80px;background:#fff1f5;
+}
+.hero:after{
+  content:"🐰";
+  position:absolute;
+  right:22px;bottom:13px;
+  font-size:42px;
+  filter:drop-shadow(0 5px 6px #d9a89a44);
+}
+.hero-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;position:relative;z-index:1}
+h1{font-size:27px;margin:0;letter-spacing:.3px}
+.countdown{text-align:right;padding-right:54px}
+.countdown b{display:block;font-size:30px;color:var(--pink)}
+.countdown span,.sub{font-size:12px;color:var(--muted)}
+.progress{
+  height:13px;
+  background:#fff0f3;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:18px;
+  border:1px solid #ffd9e2;
+  position:relative;
+  z-index:1;
+}
+#bar{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#ffb7c7,#ff8fa8);
+  transition:.25s;
+  border-radius:99px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-top:13px;
+  position:relative;
+  z-index:1;
+}
+.stat{
+  background:#fffaf9;
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:10px 6px;
+  text-align:center;
+}
+.stat:nth-child(1){background:#fff4d9}
+.stat:nth-child(2){background:#eef8ff}
+.stat:nth-child(3){background:#fff0f1}
+.stat:nth-child(4){background:#edf9f2}
+.stat b{display:block;font-size:20px}
+.stat span{font-size:10px;color:var(--muted)}
+
+.notice{
+  margin-top:13px;
+  padding:12px 14px;
+  border-radius:15px;
+  background:linear-gradient(135deg,#fff9e8,#fff4f6);
+  color:#8d6659;
+  font-size:12px;
+  border:1px dashed #f0c9bd;
+  position:relative;
+  z-index:1;
+}
+.notice:before{content:"✨ ";}
+
+.quick{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:12px;
+  position:relative;
+  z-index:1;
+}
+.quick button{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  border-radius:14px;
+  min-height:42px;
+  font-weight:700;
+}
+.quick button:nth-child(1){background:#fff1f3}
+.quick button:nth-child(2){background:#fff8de}
+.quick button:nth-child(3){background:#f3edff}
+
+.tabs{
+  position:sticky;top:0;z-index:8;
+  background:rgba(255,248,245,.92);
+  backdrop-filter:blur(16px);
+  padding:11px 0;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+.tab{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  border-radius:15px;
+  min-height:44px;
+  font-weight:700;
+  box-shadow:0 4px 12px rgba(153,91,73,.05);
+}
+.tab.active{
+  background:linear-gradient(135deg,#ffafc0,#ff8fa8);
+  color:white;
+  border-color:#ff9fb4;
+}
+.panel{display:none}.panel.active{display:block}
+.toolbar{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  gap:8px;
+  margin:5px 0 13px;
+}
+.toolbar input,.toolbar select,.toolbar button{
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  border-radius:14px;
+  min-height:44px;
+  padding:0 11px;
+}
+.section{margin:17px 0}
+.section h2{
+  font-size:18px;
+  margin:0 5px 9px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.section h2:before{content:"🌷";margin-right:7px}
+.section h2 span{font-size:12px;color:var(--muted);font-weight:500}
+.task{
+  display:grid;
+  grid-template-columns:31px 1fr auto;
+  gap:10px;
+  border-radius:19px;
+  padding:14px;
+  margin-bottom:9px;
+  transition:transform .16s ease,opacity .16s ease,box-shadow .16s ease;
+}
 .task:active{transform:scale(.992)}
-.check{transition:transform .15s ease,background .15s ease}
-.check:checked{transform:scale(1.05)}
-.fab{transition:transform .15s ease}
+.task.overdue{border-color:#f2b6bf;background:#fff9fa}
+.task.soon{border-color:#eed7a5;background:#fffdf7}
+.task.done{opacity:.72;background:#fbfbfb}
+.task.done .title{text-decoration:line-through;color:#ad9f9b}
+.starred{box-shadow:0 10px 28px rgba(255,143,168,.17);border-color:#f6c3cf}
+.check{
+  appearance:none;
+  width:28px;height:28px;
+  border:2px solid #e7b8c3;
+  border-radius:10px;
+  margin:1px 0 0;
+  background:#fff;
+  transition:.15s;
+}
+.check:checked{
+  background:linear-gradient(135deg,#ffabc0,#ff8fa8);
+  border-color:#ff8fa8;
+  transform:scale(1.05);
+}
+.check:checked:after{
+  content:"✓";
+  display:block;
+  color:white;
+  font-weight:800;
+  font-size:18px;
+  text-align:center;
+  line-height:24px;
+}
+.title{font-weight:800;font-size:15px}
+.note{font-size:12px;color:var(--muted);margin:6px 0}
+.meta{display:flex;gap:6px;flex-wrap:wrap}
+.chip{
+  font-size:11px;
+  padding:4px 8px;
+  background:var(--lav);
+  color:#735a9e;
+  border-radius:99px;
+}
+.chip.red{background:#ffe7eb;color:var(--red)}
+.chip.amber{background:#fff0d4;color:var(--amber)}
+.chip.green{background:#e6f6ed;color:var(--green)}
+.edit{border:0;background:transparent;font-size:21px;color:#bc9d94}
+
+.card{
+  border-radius:20px;
+  padding:15px;
+  margin-bottom:11px;
+}
+.card h3{margin:0 0 11px;font-size:17px}
+.budget-row{
+  display:grid;
+  grid-template-columns:1fr 100px 100px auto;
+  gap:7px;
+  margin-bottom:8px;
+}
+.budget-row input{
+  min-width:0;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:9px;
+  background:#fffdfa;
+  color:var(--text);
+}
+.budget-total{font-size:24px;font-weight:900;color:var(--pink)}
+.empty{
+  padding:28px;
+  text-align:center;
+  color:var(--muted);
+  background:#fff;
+  border:1px dashed var(--line);
+  border-radius:18px;
+}
+.empty:before{content:"🐻 ";}
+
+dialog{
+  width:min(calc(100% - 24px),560px);
+  border:0;border-radius:24px;padding:0;
+  box-shadow:0 20px 80px rgba(89,53,41,.28);
+}
+dialog::backdrop{background:rgba(89,53,41,.28);backdrop-filter:blur(3px)}
+.dialog{padding:19px;background:#fffaf8}
+.dialog h3{margin:0 0 14px}
+.field{margin-bottom:11px}
+.field label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}
+.field input,.field select,.field textarea{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:11px;
+  min-height:44px;
+  background:#fff;
+  color:var(--text);
+}
+.field textarea{min-height:82px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.actions button{min-height:45px;border:1px solid var(--line);border-radius:13px;background:#fff}
+.actions .save{background:linear-gradient(135deg,#ffabc0,#ff8fa8);color:#fff;border-color:#ff8fa8}
+.fab{
+  position:fixed;
+  right:18px;
+  bottom:calc(18px + env(safe-area-inset-bottom));
+  width:58px;height:58px;
+  border:0;border-radius:50%;
+  background:linear-gradient(135deg,#ffb5c6,#ff8fa8);
+  color:#fff;font-size:30px;
+  box-shadow:0 12px 28px rgba(255,143,168,.38);
+  transition:transform .15s ease;
+}
 .fab:active{transform:scale(.94)}
-.tab{font-weight:700}
-.notice{margin-top:12px;padding:10px 12px;border-radius:12px;background:#eef1ff;color:#4d5dc0;font-size:12px}
-.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}
-.quick button{border:1px solid var(--line);background:#fff;border-radius:12px;min-height:40px}
-.starred{box-shadow:0 8px 24px #5167dc18;border-color:#cfd5ff}
+
+@media(max-width:520px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .toolbar{grid-template-columns:1fr 1fr}
+  .toolbar input{grid-column:1/-1}
+  .budget-row{grid-template-columns:1fr 78px 78px auto}
+  .hero{padding:17px}
+  .countdown{padding-right:42px}
+  h1{font-size:24px}
+}
 @media (prefers-color-scheme:dark){
-:root{--bg:#111318;--card:#1a1d24;--text:#f2f3f7;--muted:#9ba2b2;--line:#2a2f39;--accent:#7b8cff;--red:#ff8797;--amber:#ffb45e;--green:#57c890}
-body{background:var(--bg)}
-.hero{background:linear-gradient(135deg,#1c2028,#20263a)}
-.stat,.toolbar input,.toolbar select,.toolbar button,.tab,.task,.card{background:#1a1d24}
-.tab.active{background:var(--accent)}
-.task.overdue{background:#261b20}.task.soon{background:#282217}
-.notice{background:#222944;color:#b8c0ff}
+  :root{
+    --bg:#211b1d;--bg2:#191619;--card:#2a2326;--text:#ffece6;--muted:#c8aaa1;--line:#4a393d;
+  }
+  body{background:linear-gradient(180deg,var(--bg2),var(--bg))}
+  .hero,.card,.task,.stat,.toolbar input,.toolbar select,.tab,.quick button{background:#2a2326}
+  .notice{background:#33282a;color:#e9cfc6}
+  .task.done{background:#252023}
+  .field input,.field select,.field textarea,.budget-row input{background:#2a2326;color:var(--text)}
+  .dialog{background:#241e21}
 }
 
+/* v3 多动物治愈主题 */
+.animal-strip{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-around;
+  gap:8px;
+  margin:14px 0 2px;
+  padding:10px 8px 4px;
+}
+.animal{
+  position:relative;
+  width:58px;
+  height:58px;
+  border-radius:22px 22px 18px 18px;
+  display:grid;
+  place-items:center;
+  font-size:34px;
+  box-shadow:0 8px 18px rgba(153,91,73,.09);
+  border:1px solid var(--line);
+  animation:floaty 3.4s ease-in-out infinite;
+}
+.animal:nth-child(2){animation-delay:.4s}
+.animal:nth-child(3){animation-delay:.8s}
+.animal:nth-child(4){animation-delay:1.2s}
+.animal:nth-child(5){animation-delay:1.6s}
+.animal.rabbit{background:#fff0f5}
+.animal.bear{background:#fff3df}
+.animal.cat{background:#eef5ff}
+.animal.dog{background:#eef9f0}
+.animal.hamster{background:#fff7d8}
+.animal:after{
+  content:"";
+  position:absolute;
+  width:34px;height:8px;
+  bottom:-5px;
+  border-radius:50%;
+  background:rgba(121,84,71,.10);
+  filter:blur(2px);
+}
+@keyframes floaty{
+  0%,100%{transform:translateY(0) rotate(0)}
+  50%{transform:translateY(-5px) rotate(1.5deg)}
+}
+
+.section[data-animal] h2:before{content:attr(data-animal);font-size:20px}
+.task .buddy{
+  width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;
+  background:#fff6f8;
+  border:1px solid var(--line);
+  margin-top:2px;
+}
+.task{grid-template-columns:31px 31px 1fr auto}
+.task.done .buddy{animation:celebrate .5s ease}
+@keyframes celebrate{
+  0%{transform:scale(.8) rotate(-8deg)}
+  55%{transform:scale(1.25) rotate(8deg)}
+  100%{transform:scale(1) rotate(0)}
+}
+.encourage{
+  position:fixed;
+  left:50%;
+  bottom:92px;
+  transform:translateX(-50%) translateY(18px);
+  background:#fff;
+  color:var(--text);
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  border-radius:18px;
+  padding:11px 15px;
+  font-weight:800;
+  opacity:0;
+  pointer-events:none;
+  z-index:30;
+  transition:.25s ease;
+  white-space:nowrap;
+}
+.encourage.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.hero-mascot{
+  position:absolute;
+  right:18px;
+  bottom:14px;
+  font-size:46px;
+  z-index:1;
+  animation:floaty 3s ease-in-out infinite;
+}
+.corner-pets{
+  display:flex;
+  gap:6px;
+  justify-content:center;
+  margin:10px 0 2px;
+  font-size:24px;
+}
+.timeline-pet{
+  display:inline-grid;
+  place-items:center;
+  width:34px;height:34px;
+  border-radius:50%;
+  background:#fff6f8;
+  border:1px solid var(--line);
+  margin-right:8px;
+}
+.card.animal-card{position:relative;overflow:hidden}
+.card.animal-card:after{
+  content:attr(data-pet);
+  position:absolute;
+  right:12px;
+  bottom:8px;
+  font-size:38px;
+  opacity:.20;
+}
+.budget-pig{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+  padding:12px;
+  border-radius:16px;
+  background:#fff3f7;
+  border:1px solid var(--line);
+}
+.budget-pig .big{font-size:38px}
+.empty:before{content:"🐻💤 "}
+
 </style>
+
 </head>
 <body>
 <div class="app">
-<section class="hero">
- <div class="hero-top"><div><h1>🏠 Move Planner <small style="font-size:12px;color:#747b8a">v1.5</small></h1><div class="sub">东京 → 埼玉｜搬家日 2026年8月28日｜数据仅保存在本机</div></div><div class="countdown"><b id="daysLeft">-</b><span>距离搬家</span></div></div>
+<section class="hero"><div class="hero-mascot">🐰📦</div>
+ <div class="hero-top"><div><h1>🌷 Move Planner <small style="font-size:12px;color:#747b8a">v1.5</small></h1><div class="sub">东京 → 埼玉｜搬家日 2026年8月28日｜数据仅保存在本机</div></div><div class="countdown"><b id="daysLeft">-</b><span>距离搬家</span></div></div>
  <div class="progress"><div id="bar"></div></div>
  <div class="stats"><div class="stat"><b id="todayCount">0</b><span>今天</span></div><div class="stat"><b id="weekCount">0</b><span>7天内</span></div><div class="stat"><b id="overdueCount">0</b><span>逾期</span></div><div class="stat"><b id="doneCount">0</b><span>已完成</span></div></div>
-<div class="notice">建议先完成红色逾期事项，再处理7天内到期事项。勾选、备注和预算会自动保存在当前手机浏览器。</div>
+<div class="animal-strip"><div class="animal rabbit">🐰</div><div class="animal bear">🐻</div><div class="animal cat">🐱</div><div class="animal dog">🐶</div><div class="animal hamster">🐹</div></div><div class="notice">不用一次做完，每完成一件就已经很棒啦。勾选、备注和预算都会自动保存在当前手机浏览器。</div>
 <div class="quick">
-<button id="quickOverdue">查看逾期</button>
-<button id="quickWeek">查看7天内</button>
-<button id="quickImportant">查看重要</button>
+<button id="quickOverdue">先看紧急</button>
+<button id="quickWeek">看看本周</button>
+<button id="quickImportant">重要事项</button>
 </div>
 </section>
 
 <nav class="tabs">
- <button class="tab active" data-tab="tasks">待办</button>
- <button class="tab" data-tab="timeline">时间轴</button>
+ <button class="tab active" data-tab="tasks">清单</button>
+ <button class="tab" data-tab="timeline">日程</button>
  <button class="tab" data-tab="budget">预算</button>
- <button class="tab" data-tab="data">数据</button>
+ <button class="tab" data-tab="data">备份</button>
 </nav>
 
 <section id="tasks" class="panel active">
@@ -88,20 +494,20 @@ body{background:var(--bg)}
 <section id="timeline" class="panel"><div id="timelineList"></div></section>
 
 <section id="budget" class="panel">
- <div class="card"><h3>搬家预算</h3><div id="budgetRows"></div><button id="addBudget">＋ 添加费用</button></div>
- <div class="card"><div class="sub">预算合计</div><div class="budget-total" id="budgetPlan">¥0</div><div class="sub" style="margin-top:12px">实际支出</div><div class="budget-total" id="budgetActual">¥0</div></div>
+ <div class="card animal-card" data-pet="🐷"><h3>🐷 搬家预算</h3><div class="budget-pig"><div class="big">🐷</div><div><b>存钱小猪</b><div class="sub">慢慢准备，也是在认真生活呀。</div></div></div><div id="budgetRows"></div><button id="addBudget">＋ 添加费用</button></div>
+ <div class="card animal-card" data-pet="🐻"><div class="sub">预算合计</div><div class="budget-total" id="budgetPlan">¥0</div><div class="sub" style="margin-top:12px">实际支出</div><div class="budget-total" id="budgetActual">¥0</div></div>
 </section>
 
 <section id="data" class="panel">
- <div class="card"><h3>数据管理</h3><p class="sub">所有勾选、编辑和预算都保存在当前浏览器。</p><button id="exportBtn">导出备份</button> <button id="importBtn">导入备份</button><input id="importFile" type="file" accept=".json" hidden></div>
- <div class="card"><h3>安装到主屏幕</h3><p class="sub">通过 Safari 打开网页后，点“共享”→“添加到主屏幕”。本地 HTML 可能无法完整启用离线安装；部署到任意静态网站后可作为 PWA 使用。</p></div>
+ <div class="card animal-card" data-pet="🐱"><h3>🐱 数据管理</h3><p class="sub">所有勾选、编辑和预算都保存在当前浏览器。</p><button id="exportBtn">导出备份</button> <button id="importBtn">导入备份</button><input id="importFile" type="file" accept=".json" hidden></div>
+ <div class="card animal-card" data-pet="🐶"><h3>🐶 🐶 安装到主屏幕</h3><p class="sub">通过 Safari 打开网页后，点“共享”→“添加到主屏幕”。本地 HTML 可能无法完整启用离线安装；部署到任意静态网站后可作为 PWA 使用。</p></div>
 </section>
 </div>
 
-<button class="fab" id="addTask">＋</button>
+<div class="encourage" id="encourage">🐰 今天也很棒！</div><button class="fab" id="addTask">＋</button>
 
 <dialog id="taskDialog"><form method="dialog" class="dialog" id="taskForm">
-<h3 id="dialogTitle">新增待办</h3>
+<h3 id="dialogTitle">🐰 新增待办</h3>
 <input type="hidden" id="editId">
 <div class="field"><label>事项</label><input id="fTitle" required></div>
 <div class="field"><label>分类</label><input id="fCategory" list="categoryList"><datalist id="categoryList"></datalist></div>
@@ -149,21 +555,65 @@ function filtered(){
   return true;
  });
 }
+
+function taskAnimal(t){
+ const animals=["🐰","🐻","🐱","🐶","🐹","🦊","🐼"];
+ let n=0;
+ for(const ch of t.title)n+=ch.charCodeAt(0);
+ return animals[n%animals.length];
+}
+function sectionAnimal(k){
+ const m={
+  "搬家前3～4周":"🐻","搬家前1～2周":"🐱","搬家前1周":"🐶","搬家前一天":"🐹",
+  "搬家当天":"🐰","搬家后14天内":"🐼","搬家后":"🦊","搬家准备":"🐻",
+  "新房准备":"🐰","地址更新":"🐱","行政手续":"🐶","银行与保险":"🐷","旧房交接":"🐹"
+ };
+ return m[k]||"🌷";
+}
+
 function renderTasks(){
  const list=document.getElementById("taskList"),group=document.getElementById("groupBy").value,arr=filtered();
  const groups={};arr.forEach(t=>{const k=t[group]||"其他";(groups[k]??=[]).push(t)});
  const keys=Object.keys(groups).sort((a,b)=>group==="phase"?PHASES.indexOf(a)-PHASES.indexOf(b):a.localeCompare(b));
- if(!keys.length){list.innerHTML='<div class="empty">没有符合条件的待办</div>';return}
- list.innerHTML=keys.map(k=>`<div class="section"><h2>${esc(k)}<span>${groups[k].filter(x=>x.done).length}/${groups[k].length} 完成</span></h2>${groups[k].sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999")).map(taskHTML).join("")}</div>`).join("");
+ if(!keys.length){list.innerHTML='<div class="empty">这里暂时没有任务，小动物们也在休息～</div>';return}
+ list.innerHTML=keys.map(k=>`<div class="section" data-animal="${sectionAnimal(k)}"><h2>${esc(k)}<span>${groups[k].filter(x=>x.done).length}/${groups[k].length} 完成</span></h2>${groups[k].sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999")).map(taskHTML).join("")}</div>`).join("");
  bindTaskEvents(list);
 }
-function taskHTML(t){const [c,tx]=status(t);return `<article class="task ${t.done?"done":""} ${c==="red"?"overdue":c==="amber"?"soon":""}" data-id="${t.id}"><input class="check" type="checkbox" ${t.done?"checked":""}><div><div class="title">${esc(t.title)} ${"★".repeat(t.priority||1)}</div><div class="note">${esc(t.note)}</div><div class="meta"><span class="chip ${c}">${tx}</span><span class="chip">${esc(t.category)}</span>${t.location?`<span class="chip">${esc(t.location)}</span>`:""}${t.minutes?`<span class="chip">${t.minutes}分钟</span>`:""}</div></div><button class="edit">⋯</button></article>`}
-function bindTaskEvents(root){root.querySelectorAll(".task").forEach(el=>{const t=state.tasks.find(x=>x.id===el.dataset.id);el.querySelector(".check").onchange=e=>{t.done=e.target.checked;persist();render()};el.querySelector(".edit").onclick=()=>openEdit(t)})}
-function renderTimeline(){const arr=[...state.tasks].sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999"));document.getElementById("timelineList").innerHTML=arr.map(t=>`<div class="card"><b>${t.due||"无期限"}</b><div class="title" style="margin-top:5px">${t.done?"✓ ":""}${esc(t.title)}</div><div class="sub">${esc(t.phase)} · ${esc(t.category)}</div></div>`).join("")}
+function taskHTML(t){
+ const [c,tx]=status(t);
+ return `<article class="task ${t.done?"done":""} ${c==="red"?"overdue":c==="amber"?"soon":""}" data-id="${t.id}">
+ <input class="check" type="checkbox" ${t.done?"checked":""}>
+ <div class="buddy">${taskAnimal(t)}</div>
+ <div>
+  <div class="title">${esc(t.title)} ${"★".repeat(t.priority||1)}</div>
+  <div class="note">${esc(t.note)}</div>
+  <div class="meta">
+   <span class="chip ${c}">${tx}</span>
+   <span class="chip">${esc(t.category)}</span>
+   ${t.location?`<span class="chip">${esc(t.location)}</span>`:""}
+   ${t.minutes?`<span class="chip">${t.minutes}分钟</span>`:""}
+  </div>
+ </div>
+ <button class="edit">⋯</button>
+ </article>`;
+}
+function bindTaskEvents(root){
+ root.querySelectorAll(".task").forEach(el=>{
+  const t=state.tasks.find(x=>x.id===el.dataset.id);
+  el.querySelector(".check").onchange=e=>{
+   t.done=e.target.checked;
+   if(t.done)showEncourage();
+   persist();
+   render();
+  };
+  el.querySelector(".edit").onclick=()=>openEdit(t);
+ });
+}
+function renderTimeline(){const arr=[...state.tasks].sort((a,b)=>(a.due||"9999").localeCompare(b.due||"9999"));document.getElementById("timelineList").innerHTML=arr.map(t=>`<div class="card animal-card" data-pet="${taskAnimal(t)}"><b><span class="timeline-pet">${taskAnimal(t)}</span>${t.due||"无期限"}</b><div class="title" style="margin-top:5px">${t.done?"✓ ":""}${esc(t.title)}</div><div class="sub">${esc(t.phase)} · ${esc(t.category)}</div></div>`).join("")}
 function renderBudget(){const box=document.getElementById("budgetRows");box.innerHTML=state.budget.map((b,i)=>`<div class="budget-row"><input data-i="${i}" data-k="name" value="${esc(b.name)}"><input type="number" data-i="${i}" data-k="plan" value="${b.plan}"><input type="number" data-i="${i}" data-k="actual" value="${b.actual}"><button data-del="${i}">×</button></div>`).join("");box.querySelectorAll("input").forEach(x=>x.onchange=()=>{const b=state.budget[+x.dataset.i];b[x.dataset.k]=x.dataset.k==="name"?x.value:+x.value;persist();renderBudget()});box.querySelectorAll("[data-del]").forEach(x=>x.onclick=()=>{state.budget.splice(+x.dataset.del,1);persist();renderBudget()});const yen=n=>"¥"+Math.round(n).toLocaleString("ja-JP");document.getElementById("budgetPlan").textContent=yen(state.budget.reduce((s,b)=>s+(+b.plan||0),0));document.getElementById("budgetActual").textContent=yen(state.budget.reduce((s,b)=>s+(+b.actual||0),0))}
 
 const dlg=document.getElementById("taskDialog");
-function openEdit(t=null){document.getElementById("dialogTitle").textContent=t?"编辑待办":"新增待办";document.getElementById("editId").value=t?.id||"";document.getElementById("fTitle").value=t?.title||"";document.getElementById("fCategory").value=t?.category||"搬家准备";document.getElementById("fPhase").value=t?.phase||"搬家前1周";document.getElementById("fDue").value=t?.due||MOVE_DATE;document.getElementById("fPriority").value=t?.priority||2;document.getElementById("fMinutes").value=t?.minutes||"";document.getElementById("fLocation").value=t?.location||"";document.getElementById("fNote").value=t?.note||"";dlg.showModal()}
+function openEdit(t=null){document.getElementById("dialogTitle").textContent=t?"🐱 编辑待办":"🐰 新增待办";document.getElementById("editId").value=t?.id||"";document.getElementById("fTitle").value=t?.title||"";document.getElementById("fCategory").value=t?.category||"搬家准备";document.getElementById("fPhase").value=t?.phase||"搬家前1周";document.getElementById("fDue").value=t?.due||MOVE_DATE;document.getElementById("fPriority").value=t?.priority||2;document.getElementById("fMinutes").value=t?.minutes||"";document.getElementById("fLocation").value=t?.location||"";document.getElementById("fNote").value=t?.note||"";dlg.showModal()}
 document.getElementById("saveTask").onclick=e=>{const title=document.getElementById("fTitle").value.trim();if(!title){e.preventDefault();return}const id=document.getElementById("editId").value;let t=state.tasks.find(x=>x.id===id);if(!t){t={id:"u"+Date.now(),done:false};state.tasks.push(t)}Object.assign(t,{title,category:document.getElementById("fCategory").value||"其他",phase:document.getElementById("fPhase").value,due:document.getElementById("fDue").value,priority:+document.getElementById("fPriority").value,minutes:+document.getElementById("fMinutes").value||0,location:document.getElementById("fLocation").value,note:document.getElementById("fNote").value});persist();render()};
 document.getElementById("addTask").onclick=()=>openEdit();
 document.getElementById("addBudget").onclick=()=>{state.budget.push({name:"新费用",plan:0,actual:0});persist();renderBudget()};
@@ -174,6 +624,24 @@ document.getElementById("categoryList").innerHTML=[...new Set(DEFAULT_TASKS.map(
 document.getElementById("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="move-planner-backup.json";a.click();URL.revokeObjectURL(a.href)};
 document.getElementById("importBtn").onclick=()=>document.getElementById("importFile").click();
 document.getElementById("importFile").onchange=async e=>{try{const x=JSON.parse(await e.target.files[0].text());if(x.tasks){state=x;persist();render();alert("导入完成")}}catch(err){alert("导入失败")}};
+
+
+const encouragements=[
+"🐰 今天也很棒！",
+"🐻 慢慢来也没关系～",
+"🐱 又完成一件啦！",
+"🐶 做得真好！",
+"🐹 休息一下也可以哦～",
+"🐼 你已经很努力了！",
+"🦊 离轻松一点又近一步啦！"
+];
+function showEncourage(){
+  const box=document.getElementById("encourage");
+  box.textContent=encouragements[Math.floor(Math.random()*encouragements.length)];
+  box.classList.add("show");
+  clearTimeout(window.__encourageTimer);
+  window.__encourageTimer=setTimeout(()=>box.classList.remove("show"),1800);
+}
 
 document.getElementById("quickOverdue").onclick=()=>{document.querySelector('[data-tab="tasks"]').click();document.getElementById("filter").value="overdue";renderTasks();document.getElementById("taskList").scrollIntoView({behavior:"smooth"})};
 document.getElementById("quickWeek").onclick=()=>{document.querySelector('[data-tab="tasks"]').click();document.getElementById("filter").value="week";renderTasks();document.getElementById("taskList").scrollIntoView({behavior:"smooth"})};

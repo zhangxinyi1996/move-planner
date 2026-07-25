@@ -1,10 +1,10 @@
 {
-  "name": "Move Planner v1.5 搬家管家",
+  "name": "Animal Move Planner 多动物搬家管家",
   "short_name": "Move Planner",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f5f6fa",
-  "theme_color": "#f5f6fa",
+  "background_color": "#fff8f5",
+  "theme_color": "#fff8f5",
   "icons": [
     {
       "src": "icon.svg",
